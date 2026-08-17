@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 
 ### 2. CREATE a task with NO title -> should FAIL (expect: 400 Bad Request)
-POST http://localhost:5000/api/tasks
+POST http://localhost:5000/api/tasks/
 Content-Type: application/json
 
 {
@@ -24,15 +24,13 @@ GET http://localhost:5000/api/tasks
 GET http://localhost:5000/api/tasks?completed=true
 
 ### 5. GET ONE task by ID  (expect: 200 OK)
-### vvv Replace YOUR_TASK_ID_HERE with a real _id from request #1's response vvv
-GET http://localhost:5000/api/tasks/6a82fbdd78c3f6ff478d5ee6
+GET http://localhost:5000/api/tasks/6a8325829dc6e0f1af42bbcb
 
 ### 6. GET ONE task with a FAKE ID -> should FAIL (expect: 404 Not Found)
 GET http://localhost:5000/api/tasks/000000000000000000000000
 
 ### 7. UPDATE a task (PUT)  (expect: 200 OK, isCompleted now true)
-### vvv Replace YOUR_TASK_ID_HERE with a real _id vvv
-PUT http://localhost:5000/api/tasks/6a82fbdd78c3f6ff478d5ee6
+PUT http://localhost:5000/api/tasks/6a8325829dc6e0f1af42bbcb
 Content-Type: application/json
 
 {
@@ -40,8 +38,7 @@ Content-Type: application/json
 }
 
 ### 8. UPDATE a task (PATCH) - partial update  (expect: 200 OK)
-### vvv Replace YOUR_TASK_ID_HERE with a real _id vvv
-PATCH http://localhost:5000/api/tasks/6a82fbdd78c3f6ff478d5ee6
+PATCH http://localhost:5000/api/tasks/6a8325829dc6e0f1af42bbcb
 Content-Type: application/json
 
 {
@@ -49,9 +46,7 @@ Content-Type: application/json
 }
 
 ### 9. DELETE a task  (expect: 200 OK, success message)
-### vvv Replace YOUR_TASK_ID_HERE with a real _id vvv
-DELETE http://localhost:5000/api/tasks/6a82fbdd78c3f6ff478d5ee6
+DELETE http://localhost:5000/api/tasks/6a8325829dc6e0f1af42bbcb
 
 ### 10. GET the deleted task again -> should FAIL (expect: 404 Not Found)
-### vvv Use the SAME id you just deleted above vvv
-GET http://localhost:5000/api/tasks/6a82fbdd78c3f6ff478d5ee6
+GET http://localhost:5000/api/tasks/6a8325829dc6e0f1af42bbcb
