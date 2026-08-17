@@ -1,6 +1,6 @@
 // server.js
-// This is the ENTRY POINT of our app — the file we actually run.
-// It wires together: config, database connection, middleware, and routes.
+// this is the main file that runs the app
+// everything starts from here (db, middleware, routes)
 
 const express = require("express");
 const dotenv = require("dotenv");
@@ -10,33 +10,33 @@ const taskRoutes = require("./routes/taskRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const notFound = require("./middleware/notFound");
 
-// Load variables from .env into process.env
+// loads the .env file
 dotenv.config();
 
-// Connect to MongoDB
+// connect to the database
 connectDB();
 
 const app = express();
 
-// ---- Middleware ----
-// express.json() lets our app read JSON request bodies (req.body)
-// safely. Without this, req.body would be undefined.
+// ---- middleware ----
+// this lets express read json from the request body
 app.use(express.json());
 
-// ---- Routes ----
-// A simple health-check route so we can confirm the server is alive
+// ---- routes ----
+// simple route just to check the server is working
 app.get("/", (req, res) => {
     res.json({ message: "Todo List API is running 🚀" });
 });
 
-// All task-related routes live under /api/tasks
+// all task routes start with /api/tasks
 app.use("/api/tasks", taskRoutes);
 
-// ---- Error handling (must be registered AFTER routes) ----
-app.use(notFound);     // catches unknown routes -> 404
-app.use(errorHandler); // catches thrown/passed errors -> 500 (or 400)
+// ---- errors ----
+// these need to go after the routes
+app.use(notFound);     // for urls that dont exist -> 404
+app.use(errorHandler); // for when something breaks -> 500
 
-// ---- Start the server ----
+// ---- start the server ----
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

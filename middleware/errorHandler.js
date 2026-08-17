@@ -1,9 +1,12 @@
+// middleware/errorHandler.js
+// this catches errors sent with next(error) from the controllers
+// needs 4 params so express knows its an error handler
 
 const errorHandler = (err, req, res, next) => {
-    // Log the full error on the SERVER side (for debugging by developers)
+    // print the error so i can see it in the terminal
     console.error("🔥 Error:", err.stack || err.message);
 
-    // Handle Mongoose validation errors with a clean 400 response
+    // mongoose validation errors get a 400 instead of 500
     if (err.name === "ValidationError") {
         const messages = Object.values(err.errors).map((e) => e.message);
         return res.status(400).json({
@@ -12,8 +15,8 @@ const errorHandler = (err, req, res, next) => {
         });
     }
 
-    // Everything else: send a clean, generic 500 response to the CLIENT
-    // side. We never send err.stack to the client.
+    // anything else just send a generic 500 message
+    // not sending err.stack to the client
     res.status(500).json({
         success: false,
         message: "Internal Server Error"

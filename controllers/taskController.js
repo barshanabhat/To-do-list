@@ -1,25 +1,21 @@
 // controllers/taskController.js
-// A "controller" holds the actual logic for what happens when a request
-// hits an endpoint. Routes just point to these functions.
+// this is where the logic for each route goes
 //
-// Every function below follows the same pattern:
-// 1. try { ... do the database work ... }
-// 2. catch (error) { next(error) }  -> this passes the error to our
-//    global error handler (middleware/errorHandler.js) instead of
-//    crashing the server or leaking a raw stack trace to the client.
+// every function follows the same pattern:
+// try { talk to the database }
+// catch (error) { next(error) } sends it to errorHandler.js
 
 const Task = require("../models/Task");
 
-// ------------------------------------------------------------------
-// CREATE  ->  POST /api/tasks
-// ------------------------------------------------------------------
+// -------------------------------
+// CREATE - post /api/tasks
+// -------------------------------
 const createTask = async (req, res, next) => {
     try {
         const { title, description, isCompleted, dueDate } = req.body;
 
-        // Basic validation: title is required (schema also enforces this,
-        // but checking here lets us return a clean 400 error message
-        // instead of a generic Mongoose validation error).
+        // checking title here too even though the model already checks it,
+        // gives a nicer error message this way
         if (!title || title.trim() === "") {
             return res.status(400).json({
                 success: false,
@@ -34,7 +30,7 @@ const createTask = async (req, res, next) => {
             dueDate
         });
 
-        // 201 Created = a new resource was successfully made
+        // 201 means something new was created
         res.status(201).json({
             success: true,
             data: task
@@ -44,17 +40,17 @@ const createTask = async (req, res, next) => {
     }
 };
 
-// ------------------------------------------------------------------
-// READ ALL  ->  GET /api/tasks
-// Supports optional filtering:  GET /api/tasks?completed=true
-// ------------------------------------------------------------------
+// -------------------------------
+// GET ALL - get /api/tasks
+// you can also filter like /api/tasks?completed=true
+// -------------------------------
 const getTasks = async (req, res, next) => {
     try {
         const { completed } = req.query;
 
         const filter = {};
 
-        // req.query values are always strings, so we compare to "true"
+        // stuff from the url is always text, so compare with "true"
         if (completed !== undefined) {
             filter.isCompleted = completed === "true";
         }
@@ -71,9 +67,9 @@ const getTasks = async (req, res, next) => {
     }
 };
 
-// ------------------------------------------------------------------
-// READ ONE  ->  GET /api/tasks/:id
-// ------------------------------------------------------------------
+// -------------------------------
+// GET ONE - get /api/tasks/:id
+// -------------------------------
 const getTaskById = async (req, res, next) => {
     try {
         const task = await Task.findById(req.params.id);
@@ -90,9 +86,8 @@ const getTaskById = async (req, res, next) => {
             data: task
         });
     } catch (error) {
-        // If the ID is not a valid MongoDB ObjectId format, Mongoose
-        // throws a "CastError". We treat that the same as "not found"
-        // instead of a scary 500 error.
+        // if the id is not a valid mongodb id mongoose throws a CastError
+        // treating that as not found instead of a 500 error
         if (error.name === "CastError") {
             return res.status(404).json({
                 success: false,
@@ -103,17 +98,16 @@ const getTaskById = async (req, res, next) => {
     }
 };
 
-// ------------------------------------------------------------------
-// UPDATE  ->  PUT /api/tasks/:id  or  PATCH /api/tasks/:id
-// PUT and PATCH share the same logic here because we only update the
-// fields that were actually sent in the request body.
-// ------------------------------------------------------------------
+// -------------------------------
+// UPDATE - put or patch /api/tasks/:id
+// im using one function for both of them because i only change the
+// things that the user actually sends me
+// -------------------------------
 const updateTask = async (req, res, next) => {
     try {
         const { title, description, isCompleted, dueDate } = req.body;
 
-        // If the client is trying to update the title, make sure it's
-        // not being set to an empty string.
+        // dont let the title get updated to an empty string
         if (title !== undefined && title.trim() === "") {
             return res.status(400).json({
                 success: false,
@@ -121,8 +115,8 @@ const updateTask = async (req, res, next) => {
             });
         }
 
-        // Only include fields that were actually provided, so PATCH-style
-        // partial updates don't accidentally wipe out other fields.
+        // only add fields that were actually sent, otherwise the
+        // other fields get overwritten with undefined
         const updates = {};
         if (title !== undefined) updates.title = title;
         if (description !== undefined) updates.description = description;
@@ -133,8 +127,8 @@ const updateTask = async (req, res, next) => {
             req.params.id,
             updates,
             {
-                new: true,          // return the UPDATED document, not the old one
-                runValidators: true // re-run schema validation (e.g. maxlength)
+                new: true,          // without this it returns the old task
+                runValidators: true // so the schema rules still get checked
             }
         );
 
@@ -160,9 +154,9 @@ const updateTask = async (req, res, next) => {
     }
 };
 
-// ------------------------------------------------------------------
-// DELETE  ->  DELETE /api/tasks/:id
-// ------------------------------------------------------------------
+// -------------------------------
+// DELETE - delete /api/tasks/:id
+// -------------------------------
 const deleteTask = async (req, res, next) => {
     try {
         const task = await Task.findByIdAndDelete(req.params.id);

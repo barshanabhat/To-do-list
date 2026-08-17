@@ -1,6 +1,6 @@
 // routes/taskRoutes.js
-// This file maps each HTTP method + URL to the controller function
-// that should handle it. It's like a "menu" of endpoints.
+// connects each url to a function from the controller
+// the real logic is in the controller file, this is just a list
 
 const express = require("express");
 const {
@@ -13,22 +13,23 @@ const {
 
 const router = express.Router();
 
-// POST   /api/tasks        -> create a new task
+// make a new task
 router.post("/", createTask);
 
-// GET    /api/tasks        -> get all tasks (supports ?completed=true)
+// get all the tasks, you can also do ?completed=true
 router.get("/", getTasks);
 
-// GET    /api/tasks/:id    -> get one task by its ID
+// get only one task using its id
 router.get("/:id", getTaskById);
 
-// PUT    /api/tasks/:id    -> full update of a task
+// update a task
 router.put("/:id", updateTask);
 
-// PATCH  /api/tasks/:id    -> partial update of a task
+// update only some parts of a task
+// (using the same function for put and patch)
 router.patch("/:id", updateTask);
 
-// DELETE /api/tasks/:id    -> delete a task
+// delete a task
 router.delete("/:id", deleteTask);
 
 module.exports = router;
