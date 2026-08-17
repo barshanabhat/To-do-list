@@ -1,11 +1,3 @@
-// middleware/errorHandler.js
-// This is our "global error catcher". Express automatically sends any
-// error passed to next(error) here, AS LONG AS this middleware is
-// registered LAST in server.js (after all routes).
-//
-// Without this, an unexpected crash (e.g. database connection drop)
-// would either crash the whole server or leak an ugly raw stack trace
-// to the client — both are bad for a production API.
 
 const errorHandler = (err, req, res, next) => {
     // Log the full error on the SERVER side (for debugging by developers)
